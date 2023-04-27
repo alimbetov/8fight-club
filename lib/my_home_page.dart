@@ -46,11 +46,11 @@ class MyHomePageState extends State<MyHomePage> {
 
   Color getGoButtonColor() {
     if (yourLives == 0 || enemyLives == 0) {
-      return fightClubColors.blackButton;
+      return FightClubColors.blackButton;
     } else if (defendingbodypart != null || ataccingbodypart != null) {
-      return fightClubColors.greyButton;
+      return FightClubColors.greyButton;
     } else {
-      return fightClubColors.blackButton;
+      return FightClubColors.blackButton;
     }
   }
 
@@ -101,7 +101,7 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: fightClubColors.background,
+      backgroundColor: FightClubColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -161,7 +161,7 @@ class GoButton extends StatelessWidget {
                 child: Text(
                   title.toUpperCase(),
                   style: TextStyle(
-                      color: fightClubColors.whitText,
+                      color: FightClubColors.whiteText,
                       fontWeight: FontWeight.w900,
                       fontSize: 16),
                 ),
@@ -196,7 +196,7 @@ class FightersInfo extends StatelessWidget {
             children: [
               Expanded(
                 child: ColoredBox(
-                  color: fightClubColors.backgroundwhite,
+                  color: FightClubColors.backgroundwhite,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -214,7 +214,7 @@ class FightersInfo extends StatelessWidget {
                             height: 12,
                           ),
                           Image.asset(
-                            FightClubImages.yourAvatar,
+                            FightClubImages.youAvatar,
                             fit: BoxFit.cover,
                             width: 92,
                             height: 92,
@@ -225,22 +225,16 @@ class FightersInfo extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                left: 50,
-                right: 50,
-                child: Container(
-                    width: 40,
-                    height: 40,
-                    color: Colors.green[300],
-                    child: SizedBox(),
+              ColoredBox(
+                color: Colors.green,
+                child: SizedBox(
+                  height: 40,
+                  width: 40,
                 ),
               ),
-
-
-
-                Expanded(
+              Expanded(
                 child: ColoredBox(
-                  color: fightClubColors.background2,
+                  color: FightClubColors.background,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -313,15 +307,15 @@ class BodyPartButton extends StatelessWidget {
         width: 158,
         child: ColoredBox(
           color: selected
-              ? fightClubColors.blueButton
-              : fightClubColors.greyButton,
+              ? FightClubColors.blueButton
+              : FightClubColors.greyButton,
           child: Center(
             child: Text(
               bodyPart.name.toUpperCase(),
               style: TextStyle(
                   color: selected
-                      ? fightClubColors.whitText
-                      : fightClubColors.darkGreText),
+                      ? FightClubColors.whiteText
+                      : FightClubColors.darkGreyText),
             ),
           ),
         ),
@@ -493,14 +487,14 @@ class InfoBox extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ColoredBox(
-                  color: fightClubColors.background2,
+                  color: FightClubColors.background2,
                   child: SizedBox(
                     height: 146,
                     child: Center(
                         child: Text(
                       title,
                       style: TextStyle(
-                          color: fightClubColors.darkGreText,
+                          color: FightClubColors.darkGreyText,
                           fontWeight: FontWeight.w400,
                           fontSize: 10),
                     )),
