@@ -24,7 +24,7 @@ class MyHomePageState extends State<MyHomePage> {
   BodyPart? whatEnemyAtacks = BodyPart.random();
   BodyPart? whatEnemyDefends = BodyPart.random();
 
-  String msgBox = "";
+  String msgbox = "";
 
   void _selectDefendingBodyPart(final BodyPart value) {
     if (yourLives == 0 || enemyLives == 0) {
@@ -68,26 +68,24 @@ class MyHomePageState extends State<MyHomePage> {
         final bool enemyLoseLife = ataccingbodypart != whatEnemyDefends;
         if (yourLoseLife) {
           yourLives -= 1;
-          text2 =
-              "Enemy's hit your " + whatEnemyAtacks!.name.toLowerCase() + ".";
+          text2 = "Enemy's hit your ${whatEnemyAtacks!.name.toLowerCase()}.";
         } else {
           text2 = "Enemy's attack was locked.";
         }
         if (enemyLoseLife) {
           enemyLives -= 1;
-          text1 =
-              "Your hit enemy's " + ataccingbodypart!.name.toLowerCase() + ".";
+          text1 = "Your hit enemy's ${ataccingbodypart!.name.toLowerCase()}.";
         } else {
           text1 = "Your attack was locked.";
         }
-        msgBox = text1 + "\n" + text2;
+        msgbox = text1 + "\n" + text2;
 
         if (yourLives == 0 && enemyLives == 0) {
-          msgBox = "draw.";
+          msgbox = "draw.";
         } else if (yourLives != 0 && enemyLives == 0) {
-          msgBox = "You won.";
+          msgbox = "You won.";
         } else if (yourLives == 0 && enemyLives != 0) {
-          msgBox = "You lost.";
+          msgbox = "You lost.";
         }
 
         whatEnemyDefends = BodyPart.random();
@@ -105,12 +103,40 @@ class MyHomePageState extends State<MyHomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            FightersInfo(
-              maxlivesCount: maxLives,
-              yourlivesCount: yourLives,
-              enemylivesCount: enemyLives,
+            Expanded(
+              child: FightersInfo(
+                maxlivesCount: maxLives,
+                yourlivesCount: yourLives,
+                enemylivesCount: enemyLives,
+              ),
             ),
-            InfoBox(title: msgBox),
+            SizedBox(
+              height: 30,
+            ),
+            Expanded(
+                child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: ColoredBox(
+                color: FightClubColors.background_darkPurple,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Center(
+                    child: Text(
+                      msgbox,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: FightClubColors.darkGreyText,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10),
+                    ),
+                  ),
+                ),
+              ),
+            )),
+            // InfoBox(title: msgBox),
+            SizedBox(
+              height: 30,
+            ),
             Controlswidjet(
               defendingbodypart: defendingbodypart,
               selectDefendingBodyPart: _selectDefendingBodyPart,
@@ -187,42 +213,54 @@ class FightersInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 180,
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
+      height: 160,
+      child: Stack(
         children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                  child: ColoredBox(
+                color: FightClubColors.backgroundwhite,
+              )),
+              Expanded(
+                  child: ColoredBox(
+                color: FightClubColors.background_darkPurple,
+              )),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Expanded(
-                child: ColoredBox(
-                  color: FightClubColors.backgroundwhite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      LivesWidjet(
-                        overAllLivesCount: maxlivesCount,
-                        currentAllLivesCount: yourlivesCount,
-                      ),
-                      Column(
-                        children: [
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Text("YOU"),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Image.asset(
-                            FightClubImages.youAvatar,
-                            fit: BoxFit.cover,
-                            width: 92,
-                            height: 92,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    LivesWidjet(
+                      overAllLivesCount: maxlivesCount,
+                      currentAllLivesCount: yourlivesCount,
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "YOU",
+                          style: TextStyle(color: FightClubColors.darkGreyText),
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Image.asset(
+                          FightClubImages.youAvatar,
+                          fit: BoxFit.cover,
+                          width: 92,
+                          height: 92,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               ColoredBox(
@@ -233,34 +271,34 @@ class FightersInfo extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: ColoredBox(
-                  color: FightClubColors.background,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Text("ENEMY"),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Image.asset(
-                            FightClubImages.enemyAvatar,
-                            fit: BoxFit.cover,
-                            width: 92,
-                            height: 92,
-                          ),
-                        ],
-                      ),
-                      LivesWidjet(
-                        overAllLivesCount: maxlivesCount,
-                        currentAllLivesCount: enemylivesCount,
-                      ),
-                    ],
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "ENEMY",
+                          style: TextStyle(color: FightClubColors.darkGreyText),
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Image.asset(
+                          FightClubImages.enemyAvatar,
+                          fit: BoxFit.cover,
+                          width: 92,
+                          height: 92,
+                        ),
+                      ],
+                    ),
+                    LivesWidjet(
+                      overAllLivesCount: maxlivesCount,
+                      currentAllLivesCount: enemylivesCount,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -398,7 +436,11 @@ class Controlswidjet extends StatelessWidget {
               SizedBox(
                 height: 40,
               ),
-              Center(child: Text('defend'.toUpperCase())),
+              Center(
+                  child: Text(
+                'defend'.toUpperCase(),
+                style: TextStyle(color: FightClubColors.darkGreyText),
+              )),
               SizedBox(
                 height: 14,
               ),
@@ -436,7 +478,11 @@ class Controlswidjet extends StatelessWidget {
               SizedBox(
                 height: 40,
               ),
-              Center(child: Text('attack'.toUpperCase())),
+              Center(
+                  child: Text(
+                'attack'.toUpperCase(),
+                style: TextStyle(color: FightClubColors.darkGreyText),
+              )),
               SizedBox(
                 height: 14,
               ),
@@ -469,38 +515,5 @@ class Controlswidjet extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class InfoBox extends StatelessWidget {
-  final String title;
-
-  const InfoBox({Key? key, required this.title}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ColoredBox(
-                  color: FightClubColors.background2,
-                  child: SizedBox(
-                    height: 146,
-                    child: Center(
-                        child: Text(
-                      title,
-                      style: TextStyle(
-                          color: FightClubColors.darkGreyText,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10),
-                    )),
-                  )),
-            ),
-          ),
-        ]);
   }
 }

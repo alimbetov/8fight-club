@@ -6,7 +6,7 @@ class FightClubColors{
   FightClubColors. _();
 
   static const Color background = Color.fromRGBO(213, 222, 240, 1);
-  static const Color background2 = Color.fromRGBO(197, 209, 234, 1);
+  static const Color background_darkPurple = Color(0xFFC5D1EA);
   static const Color backgroundwhite = Color.fromRGBO(255, 255, 255, 0.87);
 
 
