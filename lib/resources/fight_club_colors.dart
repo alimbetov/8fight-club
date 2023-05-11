@@ -2,6 +2,8 @@
 
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 class FightClubColors{
   FightClubColors. _();
 
@@ -19,6 +21,13 @@ class FightClubColors{
   static const Color darkGreyText =Color.fromRGBO(22, 22, 22, 1);
 
   static const Color whiteText = Color.fromRGBO(255, 255, 255, 0.87);
+
+  static const Color winColor =Colors.green;
+  static const Color lostColor =Colors.red;
+  static const Color drawColor =Color.fromRGBO(28, 121, 206, 1);
+
+
+
 
 
 

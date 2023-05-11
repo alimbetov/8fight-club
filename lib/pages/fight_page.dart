@@ -1,18 +1,22 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_fight_club/find_result.dart';
+import 'package:flutter_fight_club/resources/fight_club_colors.dart';
 
-import 'fight_club_icons.dart';
-import 'fight_club_colors.dart';
-import 'fight_club_images.dart';
+import 'package:flutter_fight_club/widgets/action_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+import '../resources/fight_club_icons.dart';
+import '../resources/fight_club_images.dart';
+
+class FightPage extends StatefulWidget {
+  const FightPage({Key? key}) : super(key: key);
 
   @override
-  MyHomePageState createState() => MyHomePageState();
+  FightPageState createState() => FightPageState();
 }
 
-class MyHomePageState extends State<MyHomePage> {
+class FightPageState extends State<FightPage> {
   static const maxLives = 5;
 
   BodyPart? defendingbodypart;
@@ -24,7 +28,7 @@ class MyHomePageState extends State<MyHomePage> {
   BodyPart? whatEnemyAtacks = BodyPart.random();
   BodyPart? whatEnemyDefends = BodyPart.random();
 
-  String msgbox = "";
+  late String centreText = '';
 
   void _selectDefendingBodyPart(final BodyPart value) {
     if (yourLives == 0 || enemyLives == 0) {
@@ -55,37 +59,50 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void goButton_on_tap() {
-    String text1 = "";
-    String text2 = "";
     if (yourLives == 0 || enemyLives == 0) {
-      setState(() {
-        yourLives = maxLives;
-        enemyLives = maxLives;
-      });
+      Navigator.of(context).pop();
     } else if (defendingbodypart != null && ataccingbodypart != null) {
       setState(() {
         final bool yourLoseLife = defendingbodypart != whatEnemyAtacks;
         final bool enemyLoseLife = ataccingbodypart != whatEnemyDefends;
-        if (yourLoseLife) {
-          yourLives -= 1;
-          text2 = "Enemy's hit your ${whatEnemyAtacks!.name.toLowerCase()}.";
-        } else {
-          text2 = "Enemy's attack was locked.";
-        }
-        if (enemyLoseLife) {
-          enemyLives -= 1;
-          text1 = "Your hit enemy's ${ataccingbodypart!.name.toLowerCase()}.";
-        } else {
-          text1 = "Your attack was locked.";
-        }
-        msgbox = text1 + "\n" + text2;
 
-        if (yourLives == 0 && enemyLives == 0) {
-          msgbox = "draw.";
-        } else if (yourLives != 0 && enemyLives == 0) {
-          msgbox = "You won.";
-        } else if (yourLives == 0 && enemyLives != 0) {
-          msgbox = "You lost.";
+        centreText = _calculateCenterText(yourLoseLife, enemyLoseLife);
+
+        if (yourLives == 0 || enemyLives == 0) {
+          final FightResult? fightResult =
+          FightResult.calculateResult(yourLives, enemyLives);
+          if (fightResult?.result != null) {
+            
+            SharedPreferences.getInstance().then((sharedPreferences) {
+              sharedPreferences.setString('last_fight_result', fightResult!.result.toLowerCase());
+            });
+
+            SharedPreferences.getInstance().then((sharedPreferences) {
+              int won_stat =(sharedPreferences.getInt('won_stat') ?? 0);
+              int lost_stat =(sharedPreferences.getInt('lost_stat') ?? 0);
+              int draw_stat =(sharedPreferences.getInt('draw_stat') ?? 0);
+
+              if (fightResult==FightResult.lost){
+                lost_stat++;
+                sharedPreferences.setInt('lost_stat', lost_stat );
+                print('lost_stat = {$lost_stat}');
+              }
+              if (fightResult==FightResult.won){
+                won_stat++;
+                sharedPreferences.setInt('won_stat', won_stat );
+                print('won_stat = {$won_stat}');
+              }
+              if (fightResult==FightResult.drow){
+                draw_stat++;
+                sharedPreferences.setInt('draw_stat', draw_stat);
+                print('draw_stat = {$draw_stat}');
+              }
+
+            });
+
+
+
+          }
         }
 
         whatEnemyDefends = BodyPart.random();
@@ -94,6 +111,38 @@ class MyHomePageState extends State<MyHomePage> {
         ataccingbodypart = null;
       });
     }
+
+
+
+
+
+  }
+
+  String _calculateCenterText(
+      final bool yourLoseLife, final bool enemyLoseLife) {
+    String first = "";
+    String second = "";
+
+    if (yourLives == 0 && enemyLives == 0) {
+      return "draw.";
+    } else if (yourLives != 0 && enemyLives == 0) {
+      return "You won.";
+    } else if (yourLives == 0 && enemyLives != 0) {
+      return "You lost.";
+    }
+    if (yourLoseLife) {
+      yourLives -= 1;
+      second = "Enemy's hit your ${whatEnemyAtacks!.name.toLowerCase()}.";
+    } else {
+      second = "Enemy's attack was locked.";
+    }
+    if (enemyLoseLife) {
+      enemyLives -= 1;
+      first = "Your hit enemy's ${ataccingbodypart!.name.toLowerCase()}.";
+    } else {
+      first = "Your attack was locked.";
+    }
+    return "${first}" + "\n" + "${second}";
   }
 
   @override
@@ -122,7 +171,7 @@ class MyHomePageState extends State<MyHomePage> {
                   width: double.infinity,
                   child: Center(
                     child: Text(
-                      msgbox,
+                      centreText,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: FightClubColors.darkGreyText,
@@ -146,9 +195,8 @@ class MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 14,
             ),
-            GoButton(
-              title:
-                  yourLives == 0 || enemyLives == 0 ? "start new game" : "go",
+            ActionButton(
+              title: yourLives == 0 || enemyLives == 0 ? "Back" : "Go",
               onTap: goButton_on_tap,
               bcolor: getGoButtonColor(),
             ),
@@ -157,42 +205,6 @@ class MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class GoButton extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
-  final Color bcolor;
-
-  const GoButton(
-      {super.key,
-      required this.onTap,
-      required this.bcolor,
-      required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GestureDetector(
-        onTap: onTap,
-        child: SizedBox(
-            height: 40,
-            child: ColoredBox(
-              color: bcolor,
-              child: Center(
-                child: Text(
-                  title.toUpperCase(),
-                  style: TextStyle(
-                      color: FightClubColors.whiteText,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16),
-                ),
-              ),
-            )),
       ),
     );
   }
@@ -222,6 +234,14 @@ class FightersInfo extends StatelessWidget {
               Expanded(
                   child: ColoredBox(
                 color: FightClubColors.backgroundwhite,
+              )),
+              Expanded(
+                  child: DecoratedBox(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [
+                  FightClubColors.backgroundwhite,
+                  FightClubColors.background_darkPurple,
+                ])),
               )),
               Expanded(
                   child: ColoredBox(
@@ -263,11 +283,21 @@ class FightersInfo extends StatelessWidget {
                   ],
                 ),
               ),
-              ColoredBox(
-                color: Colors.green,
-                child: SizedBox(
-                  height: 40,
-                  width: 40,
+              SizedBox(
+                height: 44,
+                width: 44,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: FightClubColors.blueButton,
+                  ),
+                  child: Center(
+                    child: Text(
+                      "VS",
+                      style: TextStyle(
+                          color: FightClubColors.whiteText, fontSize: 16),
+                    ),
+                  ),
                 ),
               ),
               Expanded(
@@ -343,10 +373,12 @@ class BodyPartButton extends StatelessWidget {
       child: SizedBox(
         height: 40,
         width: 158,
-        child: ColoredBox(
-          color: selected
-              ? FightClubColors.blueButton
-              : FightClubColors.greyButton,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              color: selected ? FightClubColors.blueButton : Colors.transparent,
+              border: !selected
+                  ? Border.all(color: FightClubColors.greyButton, width: 2)
+                  : null),
           child: Center(
             child: Text(
               bodyPart.name.toUpperCase(),
